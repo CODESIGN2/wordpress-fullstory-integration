@@ -22,6 +22,7 @@ register_activation_hook( __FILE__, function(){
 add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), function($links) {
     $mylinks = [
         '<a href="' . admin_url( 'options-general.php#fullstory_org_code' ) . '">Settings</a>',
+        '<a href="https://github.com/Lewiscowles1986/cd2-fullstory-integration/">Source Code (GitHub)</a>',
     ];
     return array_merge( $links, $mylinks );
 } );
