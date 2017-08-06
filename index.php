@@ -3,7 +3,7 @@
 Plugin Name: CD2 FullStory Integration
 Description: This plugin is designed to Integrate the fullstory platform with WordPress. Plugin Targets PHP7, don't try running on 5.x branch
 Author: CD2 Team
-Version: 1.01
+Version: 1.02
 Author URI: https://www.codesign2.co.uk/
 */
 
@@ -28,18 +28,27 @@ add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), function($links)
 } );
 
 add_action('admin_init', function() {
-	register_setting( 'general', 'fullstory_org_code', 'esc_attr' ); 
+    register_setting( 'general', 'fullstory_org_code', 'esc_attr' );
     add_settings_field(
-	    'fullstory_org_code',
-	    'FullStory Organisation Code',
-	    function(){
-	        $val = fullstory_get_org() ?>
-	        <input type="text" name="fullstory_org_code" id="fullstory_org_code" value="<?= $val; ?>"/>
-	        <?php
-	    },
-	    'general'
+      'fullstory_org_code',
+      'FullStory Organisation Code',
+      function(){
+          $val = fullstory_get_org() ?>
+          <input type="text" name="fullstory_org_code" id="fullstory_org_code" value="<?= $val; ?>"/>
+          <?php
+      },
+      'general'
     );
-});
+} );
+
+add_filter( 'cd2_fstory_data', function($dataFields) {
+    if( class_exists( 'woocommerce' ) ) {
+      $dataFields["totalOrders_int"] = wc_get_customer_order_count(get_current_user_id());
+      $spent = wc_get_customer_total_spent(get_current_user_id());
+      $dataFields["totalSpent_str"] = "'{$spent}'";
+    }
+    return $dataFields;
+} );
 
 add_action( 'wp_head', function() {
 ?>
@@ -64,23 +73,19 @@ window['_fs_namespace'] = 'FS';
 <?php if (is_user_logged_in()): ?><?php $current_user = wp_get_current_user(); ?><?php $current_user_data = get_userdata(get_current_user_id()); ?>
 <script>
 (function() {
-  var wpEmail = "<?= $current_user->user_email; ?>";
-  var wpUsername = "<?= $current_user->display_name; ?>";
-  var wpRoles = "<?= implode(', ', $current_user_data->roles); ?>";
-  var data = {
-    "displayName": wpUsername,
-    "email": wpEmail,
-    "roles_str": wpRoles
-  };
-  
-  <?php if( class_exists( 'woocommerce' ) ): ?>
-  var count = <?= wc_get_customer_order_count(get_current_user_id()); ?>;
-  var spend = "<?= wc_get_customer_total_spent(get_current_user_id()); ?>";
-  data["totalOrders_int"] = count;
-  data["totalSpent_str"] = spend;
-  <?php endif; ?>
-    
-  FS.identify(wpUsername, data);
+    var wpEmail = "<?= $current_user->user_email; ?>";
+    var wpUsername = "<?= $current_user->display_name; ?>";
+    var wpRoles = "<?= implode(', ', $current_user_data->roles); ?>";
+    var data = {
+        "displayName": wpUsername,
+        "email": wpEmail,
+        "roles_str": wpRoles
+    };
+
+    <?php foreach(apply_filters('cd2_fstory_data', []) as $key => $value): ?> 
+    data["<?= $key; ?>"] = <?= $value; ?>;  // ensure you enclose strings
+    <?php endforeach; ?> 
+    FS.identify(wpUsername, data);
 })();
 <?php endif; ?>
 </script>
