@@ -2,8 +2,8 @@
 Contributors: CD2Team
 Tags: integrate, integration, ux, user experience, user-experience, fullstory, cd2, codesign2, lewiscowles, user behaviour, user recording, metrics, user insight, woocommerce analytics, woocommerce monitoring, customer profile, replay user session
 Requires at least: 4.6
-Tested up to: 4.9.5
-Stable tag: 1.0.4
+Tested up to: 5.2.2
+Stable tag: 1.0.5
 License: GPLv3
 
 == Description ==
@@ -22,6 +22,13 @@ The plugin does no special work apart from ensuring that attributes are escaped 
 This is a reference plugin, we'd love to develop it further, or work with you or your business to include additional features, perhaps a hooks interface or more formal view-separation for complex projects.
 
 == Changelog ==
+
+= 1.0.5 =
+
+**Changed**
+
+* Tested with WordPress 5.2.2
+
 = 1.0.4 =
 **Added**
 
