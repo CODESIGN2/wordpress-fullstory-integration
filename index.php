@@ -3,7 +3,7 @@
 Plugin Name: CD2 FullStory Integration
 Description: This plugin is designed to Integrate the fullstory platform with WordPress. Plugin Targets PHP7, don't try running on 5.x branch
 Author: CD2 Team
-Version: 1.02
+Version: 1.04
 Author URI: https://www.codesign2.co.uk/
 */
 
@@ -83,7 +83,7 @@ window['_fs_namespace'] = 'FS';
     };
 
     <?php foreach(apply_filters('cd2_fstory_data', []) as $key => $value): ?> 
-    data["<?= $key; ?>"] = <?= $value; ?>;  // ensure you enclose strings
+    data["<?= $key; ?>"] = <?= $value; ?>; <?php // ensure you enclose strings ?>
     <?php endforeach; ?> 
     FS.identify(wpUsername, data);
 })();
