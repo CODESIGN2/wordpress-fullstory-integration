@@ -22,6 +22,25 @@ function render_cd2_fullstory_settings_page() {
         echo settings_fields( 'cd2_fullstory_wordpress_integration' );
         $val = fullstory_get_org() ?>
         <input type="text" name="fullstory_org_code" id="fullstory_org_code" value="<?= $val; ?>"/>
+        <script type="text/javascript">
+        (function() {
+            /*
+            * Helper to extract FullStory Org code from URL
+            */
+            const SCHEME_INDICATOR = '://';
+            const URL_PATH_SEPARATOR = '/';
+            const FULLSTORY_DOMAIN_INDICATOR = 'app.fullstory.com';
+            
+            document.querySelector('#fullstory_org_code').addEventListener('input', function(event) {
+                const curInput = event.target;
+                const curValue = curInput.value;
+                if (curValue.includes(SCHEME_INDICATOR) && curValue.includes(FULLSTORY_DOMAIN_INDICATOR)) {
+                    const urlParts = curValue.split(URL_PATH_SEPARATOR);
+                    curInput.value = urlParts.length > 5 ? urlParts[4] : curValue;
+                }
+            });
+        })();
+        </script>
         <?php submit_button(); ?>
     </form><?php
 }
