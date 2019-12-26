@@ -2,8 +2,8 @@
 /*
 Plugin Name: CD2 FullStory Integration
 Description: This plugin is designed to Integrate the fullstory platform with WordPress. Plugin Targets PHP7, don't try running on 5.x branch
-Author: CD2 Team
-Version: 1.06
+Author: LewisCowles
+Version: 1.07
 Author URI: https://www.codesign2.co.uk/
 */
 
@@ -21,7 +21,15 @@ function render_cd2_fullstory_settings_page() {
     <?php
         echo settings_fields( 'cd2_fullstory_wordpress_integration' );
         $val = fullstory_get_org() ?>
-        <input type="text" name="fullstory_org_code" id="fullstory_org_code" value="<?= $val; ?>"/>
+        <table class="form-table" role="presentation">
+        <tbody>
+        <tr>
+        <th scope="row"><label for="fullstory_org_code">Fullstory Organisation Code</label></th>
+        <td>
+        <input type="text" name="fullstory_org_code" id="fullstory_org_code" value="<?= $val; ?>" class="regular-text ltr"/>
+        </td>
+        </tr>
+        </table>
         <script type="text/javascript">
         (function() {
             /*
