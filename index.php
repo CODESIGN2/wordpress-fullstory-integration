@@ -3,7 +3,7 @@
 Plugin Name: CD2 FullStory Integration
 Description: This plugin is designed to Integrate the fullstory platform with WordPress. Plugin Targets PHP7, don't try running on 5.x branch
 Author: CD2 Team
-Version: 1.05
+Version: 1.06
 Author URI: https://www.codesign2.co.uk/
 */
 
@@ -15,31 +15,61 @@ function fullstory_get_org() {
     return esc_attr(get_option('fullstory_org_code', FULLSTORY_ORG));
 }
 
+function render_cd2_fullstory_settings_page() {
+    ?><h3>FullStory Settings</h3>
+    <form method="post" action="options.php">
+    <?php
+        echo settings_fields( 'cd2_fullstory_wordpress_integration' );
+        $val = fullstory_get_org() ?>
+        <input type="text" name="fullstory_org_code" id="fullstory_org_code" value="<?= $val; ?>"/>
+        <script type="text/javascript">
+        (function() {
+            /*
+            * Helper to extract FullStory Org code from URL
+            */
+            const SCHEME_INDICATOR = '://';
+            const URL_PATH_SEPARATOR = '/';
+            const FULLSTORY_DOMAIN_INDICATOR = 'app.fullstory.com';
+            
+            document.querySelector('#fullstory_org_code').addEventListener('input', function(event) {
+                const curInput = event.target;
+                const curValue = curInput.value;
+                if (curValue.includes(SCHEME_INDICATOR) && curValue.includes(FULLSTORY_DOMAIN_INDICATOR)) {
+                    const urlParts = curValue.split(URL_PATH_SEPARATOR);
+                    curInput.value = urlParts.length > 5 ? urlParts[4] : curValue;
+                }
+            });
+        })();
+        </script>
+        <?php submit_button(); ?>
+    </form><?php
+}
+
 register_activation_hook( __FILE__, function(){
     add_option( 'fullstory_org_code', '00000', '', true );
 } );
 
 add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), function($links) {
     $mylinks = [
-        '<a href="' . admin_url( 'options-general.php#fullstory_org_code' ) . '">Settings</a>',
+        '<a href="' . admin_url( 'options-general.php?page=cd2-fullstory-wordpress-integration' ) . '">Settings</a>',
         '<a href="https://github.com/Lewiscowles1986/cd2-fullstory-integration/">Source Code (GitHub)</a>',
     ];
     return array_merge( $links, $mylinks );
 } );
 
 add_action('admin_init', function() {
-    register_setting( 'general', 'fullstory_org_code', 'esc_attr' );
-    add_settings_field(
-      'fullstory_org_code',
-      'FullStory Organisation Code',
-      function(){
-          $val = fullstory_get_org() ?>
-          <input type="text" name="fullstory_org_code" id="fullstory_org_code" value="<?= $val; ?>"/>
-          <?php
-      },
-      'general'
-    );
+    register_setting( 'cd2_fullstory_wordpress_integration', 'fullstory_org_code', 'esc_attr' );
 } );
+
+add_action('admin_menu', function() {
+    add_options_page(
+        'FullStory WordPress Options',
+        'FullStory',
+        'manage_options',
+        'cd2-fullstory-wordpress-integration',
+        'render_cd2_fullstory_settings_page'
+    );
+});
 
 add_filter( 'cd2_fstory_data', function($dataFields) {
     if( class_exists( 'woocommerce' ) ) {
@@ -91,3 +121,4 @@ window['_fs_namespace'] = 'FS';
 </script>
 <?php
 } );
+
