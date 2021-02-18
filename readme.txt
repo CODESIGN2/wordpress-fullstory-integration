@@ -4,7 +4,7 @@ Tags: integrate, integration, ux, user experience, user-experience, fullstory, c
 Requires at least: 4.6
 Tested up to: 5.7.0
 Requires PHP: 5.6
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv3
 
 == Description ==
@@ -31,6 +31,19 @@ If using custom filters, please note you are wholely responsible for not messing
 This is a reference plugin, I'd love to develop it further, or work with you or your business to include additional features, perhaps a hooks interface or more formal view-separation for complex projects. I've used this on Multisite, Standard WP, multi-lingual sites.
 
 == Changelog ==
+= 1.0.9 =
+**Added**
+
+* N/A
+
+**Changed**
+
+* N/A
+
+**Fixed**
+
+* function rename error (sorry, for some reason this wasn't present on the dev-site)
+
 = 1.0.8 =
 **Added**
 
