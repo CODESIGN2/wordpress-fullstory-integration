@@ -3,7 +3,7 @@
 Plugin Name: CD2 FullStory Integration
 Description: This plugin is designed to Integrate the fullstory platform with WordPress. Plugin Targets PHP7, don't try running on 5.x branch
 Author: LewisCowles
-Version: 1.07
+Version: 1.08
 Author URI: https://www.codesign2.co.uk/
 */
 
@@ -11,8 +11,16 @@ if(!defined('FULLSTORY_ORG')) { // Why do this? Oh yeah because automated instal
     define('FULLSTORY_ORG', '00000');
 }
 
-function fullstory_get_org() {
+function cd2_fullstory_get_org() {
     return esc_attr(get_option('fullstory_org_code', FULLSTORY_ORG));
+}
+
+function cd2_fullstory_get_snippet() {
+    $install_overwrite_path = WP_CONTENT_DIR . '/fullstory/snippet.js';
+    if(file_exists($install_overwrite_path) && is_readable($install_overwrite_path)) {
+        return file_get_contents($install_overwrite_path);
+    }
+    return file_get_contents(__DIR__ . '/js/fs-snippet.js');
 }
 
 function render_cd2_fullstory_settings_page() {
@@ -31,23 +39,7 @@ function render_cd2_fullstory_settings_page() {
         </tr>
         </table>
         <script type="text/javascript">
-        (function() {
-            /*
-            * Helper to extract FullStory Org code from URL
-            */
-            const SCHEME_INDICATOR = '://';
-            const URL_PATH_SEPARATOR = '/';
-            const FULLSTORY_DOMAIN_INDICATOR = 'app.fullstory.com';
-            
-            document.querySelector('#fullstory_org_code').addEventListener('input', function(event) {
-                const curInput = event.target;
-                const curValue = curInput.value;
-                if (curValue.includes(SCHEME_INDICATOR) && curValue.includes(FULLSTORY_DOMAIN_INDICATOR)) {
-                    const urlParts = curValue.split(URL_PATH_SEPARATOR);
-                    curInput.value = urlParts.length > 5 ? urlParts[4] : curValue;
-                }
-            });
-        })();
+        <?= file_get_contents(__DIR__ . '/js/admin.js'); ?>
         </script>
         <?php submit_button(); ?>
     </form><?php
@@ -60,7 +52,7 @@ register_activation_hook( __FILE__, function(){
 add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), function($links) {
     $mylinks = [
         '<a href="' . admin_url( 'options-general.php?page=cd2-fullstory-wordpress-integration' ) . '">Settings</a>',
-        '<a href="https://github.com/Lewiscowles1986/cd2-fullstory-integration/">Source Code (GitHub)</a>',
+        '<a href="https://github.com/CODESIGN2/wordpress-fullstory-integration/">Source Code (GitHub)</a>',
     ];
     return array_merge( $links, $mylinks );
 } );
@@ -90,23 +82,13 @@ add_filter( 'cd2_fstory_data', function($dataFields) {
 
 add_action( 'wp_head', function() {
 ?>
+<?php if(apply_filters('cd2_enable_fstory', true) && apply_filters('cd2_disable_fstory_admin', !is_admin())): ?>
 <!-- FullStory WP Integration -->
 <script>
-window['_fs_debug'] = false;
-window['_fs_host'] = 'fullstory.com';
-window['_fs_org'] = '<?= fullstory_get_org() ?>';
-window['_fs_namespace'] = 'FS';
-(function(m,n,e,t,l,o,g,y){
-    if (e in m && m.console && m.console.log) { m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].'); return;}
-    g=m[e]=function(a,b){g.q?g.q.push([a,b]):g._api(a,b);};g.q=[];
-    o=n.createElement(t);o.async=1;o.src='https://'+_fs_host+'/s/fs.js';
-    y=n.getElementsByTagName(t)[0];y.parentNode.insertBefore(o,y);
-    g.identify=function(i,v){g(l,{uid:i});if(v)g(l,v)};g.setUserVars=function(v){g(l,v)};
-    g.identifyAccount=function(i,v){o='account';v=v||{};v.acctId=i;g(o,v)};
-    g.clearUserCookie=function(c,d,i){if(!c || document.cookie.match('fs_uid=[`;`]*`[`;`]*`[`;`]*`')){
-    d=n.domain;while(1){n.cookie='fs_uid=;domain='+d+
-    ';path=/;expires='+new Date(0).toUTCString();i=d.indexOf('.');if(i<0)break;d=d.slice(i+1)}}};
-})(window,document,window['_fs_namespace'],'script','user');
+window['_fs_debug'] = '<?= apply_filters('cd2_fstory_debug_enable', false) ? 'true' : 'false'; ?>';
+window['_fs_org'] = '<?= cd2_fullstory_get_org() ?>';
+
+<?= apply_filters('cd2_fstory_snippet', cd2_fullstory_get_snippet()); ?>
 </script>
 <?php if (is_user_logged_in()): ?><?php $current_user = wp_get_current_user(); ?><?php $current_user_data = get_userdata(get_current_user_id()); ?>
 <script>
@@ -124,7 +106,9 @@ window['_fs_namespace'] = 'FS';
     data["<?= $key; ?>"] = <?= $value; ?>; <?php // ensure you enclose strings ?>
     <?php endforeach; ?> 
     FS.identify(wpUsername, data);
+    FS.consent(<?= apply_filters('cd2_fstory_consent_to_protected_fields', false) ? 'true' : 'false' ?>);
 })();
+<?php endif; ?>
 <?php endif; ?>
 </script>
 <?php
