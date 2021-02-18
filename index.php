@@ -28,7 +28,7 @@ function render_cd2_fullstory_settings_page() {
     <form method="post" action="options.php">
     <?php
         echo settings_fields( 'cd2_fullstory_wordpress_integration' );
-        $val = fullstory_get_org() ?>
+        $val = cd2_fullstory_get_org() ?>
         <table class="form-table" role="presentation">
         <tbody>
         <tr>
@@ -113,4 +113,3 @@ window['_fs_org'] = '<?= cd2_fullstory_get_org() ?>';
 </script>
 <?php
 } );
-
