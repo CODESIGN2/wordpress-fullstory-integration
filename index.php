@@ -20,7 +20,7 @@ function cd2_fullstory_get_snippet() {
     if(file_exists($install_overwrite_path) && is_readable($install_overwrite_path)) {
         return file_get_contents($install_overwrite_path);
     }
-    return file_get_contents(__DIR__ . '/js/fs-snippet.js');
+    return file_get_contents(plugin_dir_path(__FILE__) . '/js/fs-snippet.js');
 }
 
 function render_cd2_fullstory_settings_page() {
@@ -39,7 +39,7 @@ function render_cd2_fullstory_settings_page() {
         </tr>
         </table>
         <script type="text/javascript">
-        <?= file_get_contents(__DIR__ . '/js/admin.js'); ?>
+        <?= file_get_contents(plugin_dir_path(__FILE__) . '/js/admin.js'); ?>
         </script>
         <?php submit_button(); ?>
     </form><?php
