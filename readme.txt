@@ -2,9 +2,9 @@
 Contributors: LewisCowles,CD2Team
 Tags: integrate, integration, ux, user experience, user-experience, fullstory, cd2, codesign2, lewiscowles, user behaviour, user recording, metrics, user insight, woocommerce analytics, woocommerce monitoring, customer profile, replay user session
 Requires at least: 4.6
-Tested up to: 5.3.2
+Tested up to: 5.7.0
 Requires PHP: 5.6
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv3
 
 == Description ==
@@ -24,13 +24,45 @@ The plugin does no special work apart from ensuring that attributes are escaped 
 
 Care has been taken to supply the following filters, so that you can specify your own custom fullstory attributes.
 
-* cd2_fstory_data
+* cd2_fstory_data (array)
 
 If using custom filters, please note you are wholely responsible for not messing things up. I recommend using a sibling plugin rather than editing this one; as well as testing locally, perhaps in staging before deploying to production as FullStory does not love malformed data. The format of data is simply key-value in a PHP array which is merged with the default array.
 
 This is a reference plugin, I'd love to develop it further, or work with you or your business to include additional features, perhaps a hooks interface or more formal view-separation for complex projects. I've used this on Multisite, Standard WP, multi-lingual sites.
 
 == Changelog ==
+= 1.0.8 =
+**Added**
+
+* Hook `cd2_enable_fstory` which allows custom plugins to disable the fullstory integration by returning false from filter. It's true by default. Just deactivate the plugin if you don't want to use.
+* Hook `cd2_disable_fstory_admin` which allows custom plugins to enable fullstory integration in the admin area by returning true from filter. Importantly, `cd2_enable_fstory` also needs to be true.
+* Hook `cd2_fstory_debug_enable` which allows custom plugins to enable debug mode by returning true from filter.
+* Hook `cd2_fstory_snippet` allows custom plugins to enable using alternative JavaScript when integrating with FullStory.
+* Ability to edit FullStory plugin JavaScript using files (source control vs database call) by editing the plugin or creating a `snippet.js` within a `fullstory` directory, inside your `wp-content` direcotry.
+
+**Changed**
+
+* Reported WordPress compatibility (after tests).
+* Disabling logic.
+* Plugin source code (following moving to the CD2 org)
+
+**Fixed**
+
+* N/A
+
+= 1.0.7 =
+**Added**
+
+* N/A
+
+**Changed**
+
+Reported WordPress compatibility (after tests)
+
+**Fixed**
+
+* N/A
+
 = 1.0.6 =
 **Added**
 
